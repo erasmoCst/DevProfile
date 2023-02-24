@@ -1,0 +1,6 @@
+{
+  "compilerOptions": {
+    "script": true
+  },
+  "extends": "expo/tsconfig.base"
+}
