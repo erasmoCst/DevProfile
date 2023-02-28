@@ -1,12 +1,6 @@
 import React, { FunctionComponent } from 'react';
-import { TouchableOpacityProps } from 'react-native/types';
 import { Container, Title } from './styles';
-
-type Button = {
-  title: string;
-};
-
-type buttonType = TouchableOpacityProps & Button;
+import { buttonType } from './types';
 
 export const Button: FunctionComponent<buttonType> = ({
   title,
