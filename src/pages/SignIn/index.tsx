@@ -1,6 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { ScrollView } from 'react-native';
-import { Input } from '../../components/form/input';
+import { Button } from '../../components/Button';
+import { Input } from '../../components/Form/Input';
 import { Container, Content, Title } from './styles';
 
 export const SignIn: FunctionComponent = () => {
@@ -14,6 +15,7 @@ export const SignIn: FunctionComponent = () => {
           <Title>Faça seu Login</Title>
           <Input placeholder="Email" />
           <Input placeholder="Senha" />
+          <Button title="Fazer Login"></Button>
         </Content>
       </Container>
     </ScrollView>
