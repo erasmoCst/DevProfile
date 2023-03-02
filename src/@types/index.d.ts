@@ -1,9 +1,13 @@
 declare module '*.png';
 
-type NavigateProps = {
+export type NavigateProps = {
   navigate: (screen) => void;
 };
 
-type StackNavigationGoBack = {
+export type StackNavigationGoBack = {
   goBack: () => void;
+};
+
+export type FormInputType = {
+  [name: string]: any;
 };
