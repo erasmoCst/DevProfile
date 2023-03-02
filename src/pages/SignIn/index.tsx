@@ -1,4 +1,5 @@
 import React, { FunctionComponent } from 'react';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 import { Button } from '../../components/Button';
 import {
@@ -14,9 +15,14 @@ import { useNavigation } from '@react-navigation/native';
 import { ControlledInput } from '../../components/Form/ControlledInput';
 import { FieldValues, useForm } from 'react-hook-form';
 import { FormInputType, NavigateProps } from '../../@types';
+import { formSchema } from '../../components/Form/Schemas';
 
 export const SignIn: FunctionComponent = () => {
-  const { handleSubmit, control } = useForm<FieldValues>();
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<FieldValues>({ resolver: yupResolver(formSchema) });
   const { navigate } = useNavigation<NavigateProps>();
 
   const handleSignIn = (form: FormInputType) => {
@@ -45,19 +51,21 @@ export const SignIn: FunctionComponent = () => {
                 <Title>Faça seu Login</Title>
               </View>
               <ControlledInput
+                autoCapitalize="none"
+                autoCorrect={false}
                 control={control}
+                error={errors.email && errors.email.message}
+                keyboardType="email-address"
                 name="email"
                 placeholder="Email"
-                autoCapitalize="none"
-                autoCorrect={false}
-                keyboardType="email-address"
               />
               <ControlledInput
-                control={control}
-                name="password"
-                placeholder="Senha"
                 autoCapitalize="none"
                 autoCorrect={false}
+                control={control}
+                error={errors.password && errors.password.message}
+                name="password"
+                placeholder="Senha"
                 secureTextEntry
               />
 

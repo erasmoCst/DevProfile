@@ -1,3 +1,4 @@
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigation } from '@react-navigation/native';
 import React, { FunctionComponent } from 'react';
 import { FieldValues, useForm } from 'react-hook-form';
@@ -5,14 +6,18 @@ import { KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { FormInputType, StackNavigationGoBack } from '../../@types';
 import { Button } from '../../components/Button';
 import { ControlledInput } from '../../components/Form/ControlledInput';
-import { Input } from '../../components/Form/Input';
+import { formSchema } from '../../components/Form/Schemas';
 import { FullSizeButton } from '../../components/FullSizeButton';
 import { Logo } from '../../components/Logo';
 import { Container, Content, Title } from './styles';
 
 export const SignUp: FunctionComponent = () => {
   const { goBack } = useNavigation<StackNavigationGoBack>();
-  const { handleSubmit, control } = useForm<FieldValues>();
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<FieldValues>({ resolver: yupResolver(formSchema) });
 
   const handleSignUp = (form: FormInputType) => {
     const data = {
@@ -40,26 +45,29 @@ export const SignUp: FunctionComponent = () => {
               <Title>Faça seu Cadastro</Title>
 
               <ControlledInput
+                autoCapitalize="words"
+                autoCorrect={false}
                 control={control}
+                error={errors.name && errors.name.message}
                 name="name"
                 placeholder="Nome Completo"
-                autoCorrect={false}
-                autoCapitalize="words"
               />
               <ControlledInput
+                autoCapitalize="none"
+                autoCorrect={false}
                 control={control}
+                error={errors.email && errors.email.message}
+                keyboardType="email-address"
                 name="email"
                 placeholder="Email"
-                autoCapitalize="none"
-                autoCorrect={false}
-                keyboardType="email-address"
               />
               <ControlledInput
-                control={control}
-                name="password"
-                placeholder="Senha"
                 autoCapitalize="none"
                 autoCorrect={false}
+                control={control}
+                error={errors.password && errors.password.message}
+                name="password"
+                placeholder="Senha"
                 secureTextEntry
               />
               <Button

@@ -1,19 +1,13 @@
 import React, { FunctionComponent } from 'react';
-import {
-  Controller,
-  ControllerFieldState,
-  ControllerRenderProps,
-  FieldValues,
-  UseFormStateReturn,
-} from 'react-hook-form';
-import theme from '../../../global/styles/theme';
+import { Controller } from 'react-hook-form';
 import { Input } from '../Input';
-import { Container } from './styles';
+import { Container, ErrorMessage } from './styles';
 import { ControlledInputType } from './type';
 
 export const ControlledInput: FunctionComponent<ControlledInputType> = ({
   control,
   name,
+  error,
   ...otherProps
 }) => {
   return (
@@ -25,6 +19,7 @@ export const ControlledInput: FunctionComponent<ControlledInputType> = ({
         )}
         name={name}
       />
+      {error && <ErrorMessage>{error}</ErrorMessage>}
     </Container>
   );
 };
