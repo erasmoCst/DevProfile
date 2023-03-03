@@ -2,14 +2,23 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigation } from '@react-navigation/native';
 import React, { FunctionComponent } from 'react';
 import { FieldValues, useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-import { FormInputType, StackNavigationGoBack } from '../../@types';
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from 'react-native';
+import {
+  GenericFormInputType,
+  StackNavigationGoBack,
+} from '../../global/@types';
 import { Button } from '../../components/Button';
 import { ControlledInput } from '../../components/Form/ControlledInput';
 import { formSchema } from '../../components/Form/Schemas';
 import { FullSizeButton } from '../../components/FullSizeButton';
 import { Logo } from '../../components/Logo';
 import { Container, Content, Title } from './styles';
+import { api } from '../../services/api';
 
 export const SignUp: FunctionComponent = () => {
   const { goBack } = useNavigation<StackNavigationGoBack>();
@@ -19,13 +28,24 @@ export const SignUp: FunctionComponent = () => {
     formState: { errors },
   } = useForm<FieldValues>({ resolver: yupResolver(formSchema) });
 
-  const handleSignUp = (form: FormInputType) => {
+  const handleSignUp = async (form: GenericFormInputType) => {
     const data = {
       name: form.name,
       email: form.email,
       password: form.password,
     };
-    console.log(data);
+    try {
+      await api.post('users', data);
+      Alert.alert(
+        'Cadastro realizado com Sucesso!',
+        'Faça seu Login para acessar o aplicativo.',
+      );
+    } catch (error) {
+      Alert.alert(
+        'Erro no cadastro',
+        'Ocorreu um erro ao fazer o cadastro. Por favor, tente novamente!',
+      );
+    }
   };
 
   return (

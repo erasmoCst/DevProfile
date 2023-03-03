@@ -3,6 +3,7 @@ import {
   Container,
   Header,
   Icon,
+  LogOutButton,
   UseAvatarButton,
   UserAvatar,
   UserGreeting,
@@ -12,10 +13,24 @@ import {
   UserWrapper,
 } from './styles';
 
-import DefaultAvatar02 from '../../assets/avatar02.png';
-import { SafeAreaView } from 'react-native';
+import AvatarDefault from '../../assets/avatar02.png';
+import { Alert, SafeAreaView } from 'react-native';
+import { useAuth } from '../../context/hooks';
 
 export const Home = () => {
+  const { user, signOut } = useAuth();
+
+  const handleSignOut = () => {
+    Alert.alert(
+      'Siar da aplicação',
+      'Tem certeza que deseja sair da aplicação?',
+      [
+        { text: 'Cancelar', onPress: () => {} },
+        { text: 'Cancelar', onPress: () => signOut() },
+      ],
+    );
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Container>
@@ -23,14 +38,22 @@ export const Home = () => {
           <UserWrapper>
             <UserInfo>
               <UseAvatarButton onPress={() => {}}>
-                <UserAvatar source={DefaultAvatar02} />
+                <UserAvatar
+                  source={
+                    user.avatar_url ? { uri: user.avatar_url } : AvatarDefault
+                  }
+                />
               </UseAvatarButton>
+
               <UserInfoDetail>
                 <UserGreeting>Olá,</UserGreeting>
-                <UserName>Erasus</UserName>
+                <UserName>{user.name}</UserName>
               </UserInfoDetail>
             </UserInfo>
-            <Icon name="power" />
+
+            <LogOutButton onPress={handleSignOut}>
+              <Icon name="power" />
+            </LogOutButton>
           </UserWrapper>
         </Header>
       </Container>

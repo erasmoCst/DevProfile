@@ -60,3 +60,5 @@ export const Icon = styled(Feather)`
   font-size: ${RFValue(28)}px;
   color: ${theme.colors.dark};
 `;
+
+export const LogOutButton = styled.TouchableOpacity``;

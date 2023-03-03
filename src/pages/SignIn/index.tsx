@@ -1,6 +1,12 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useContext, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  View,
+} from 'react-native';
 import { Button } from '../../components/Button';
 import {
   Container,
@@ -14,23 +20,38 @@ import { FullSizeButton } from '../../components/FullSizeButton';
 import { useNavigation } from '@react-navigation/native';
 import { ControlledInput } from '../../components/Form/ControlledInput';
 import { FieldValues, useForm } from 'react-hook-form';
-import { FormInputType, NavigateProps } from '../../@types';
+import { GenericFormInputType, NavigateProps } from '../../global/@types';
 import { formSchema } from '../../components/Form/Schemas';
+import { useAuth } from '../../context/hooks';
 
 export const SignIn: FunctionComponent = () => {
+  const { signIn } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const { navigate } = useNavigation<NavigateProps>();
+
   const {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<FieldValues>({ resolver: yupResolver(formSchema) });
-  const { navigate } = useNavigation<NavigateProps>();
+  } = useForm<FieldValues>({
+    resolver: yupResolver(formSchema),
+  });
 
-  const handleSignIn = (form: FormInputType) => {
+  const handleSignIn = (form: GenericFormInputType) => {
     const data = {
       email: form.email,
       password: form.password,
     };
-    console.log(data);
+    try {
+      setLoading(true);
+      console.log('data', data);
+      signIn(data);
+    } catch (error) {
+      Alert.alert(
+        'Erro na autenticação',
+        'Ocorreu um erro ao fazer login. \n Verifique as credenciais.',
+      );
+    }
   };
 
   return (
@@ -70,8 +91,9 @@ export const SignIn: FunctionComponent = () => {
               />
 
               <Button
-                title="Fazer Login"
+                disabled={loading || !!errors.email || !!errors.password}
                 onPress={handleSubmit(handleSignIn)}
+                title="Fazer Login"
               />
 
               <ForgotPasswordButton>

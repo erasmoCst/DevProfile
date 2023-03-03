@@ -9,6 +9,7 @@ import {
 import AppLoading from 'expo-app-loading';
 import { NavigationContainer } from '@react-navigation/native';
 import { Routes } from './src/routes';
+import { AuthProvider } from './src/context/AuthContext';
 
 const App: React.FunctionComponent = () => {
   const [fontsLoaded] = useFonts({
@@ -23,7 +24,9 @@ const App: React.FunctionComponent = () => {
   return (
     <NavigationContainer>
       <ThemeProvider theme={theme}>
-        <Routes />
+        <AuthProvider>
+          <Routes />
+        </AuthProvider>
       </ThemeProvider>
     </NavigationContainer>
   );
