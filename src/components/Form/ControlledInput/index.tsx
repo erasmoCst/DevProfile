@@ -19,7 +19,7 @@ export const ControlledInput: FunctionComponent<ControlledInputType> = ({
         )}
         name={name}
       />
-      {error && <ErrorMessage>{error}</ErrorMessage>}
+      {error && <ErrorMessage>{error.toString()}</ErrorMessage>}
     </Container>
   );
 };

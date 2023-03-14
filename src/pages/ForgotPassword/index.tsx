@@ -11,7 +11,7 @@ import {
 import { GenericFormInputType, NavigateProps } from '../../global/@types';
 import { Button } from '../../components/Button';
 import { ControlledInput } from '../../components/Form/ControlledInput';
-import { formSchemaForgotPassword } from '../../components/Form/Schemas';
+import { schemaFormForgotPassword } from '../../Schemas';
 import { FullSizeButton } from '../../components/FullSizeButton';
 import { Logo } from '../../components/Logo';
 import { Container, Content, Title } from './styles';
@@ -23,22 +23,21 @@ export const ForgotPassword: FunctionComponent = () => {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<FieldValues>({ resolver: yupResolver(formSchemaForgotPassword) });
+  } = useForm<FieldValues>({ resolver: yupResolver(schemaFormForgotPassword) });
 
   const handleForgotPassword = async (form: GenericFormInputType) => {
     const data = {
       email: form.email,
     };
-    console.log(form.email);
 
     try {
-      console.log('handleForgotPassword');
-      await api.post('password/forgot', form.email);
+      await api.post('password/forgot', data);
+
       Alert.alert(
         'Email enviado',
         'Você receberá um email com as instruções para redefinição de senha',
       );
-      navigate!('ResetPassword');
+      navigate('ResetPassword');
     } catch (error) {
       Alert.alert(
         'Erro no cadastro',
@@ -48,48 +47,46 @@ export const ForgotPassword: FunctionComponent = () => {
   };
 
   return (
-    <>
-      <KeyboardAvoidingView
-        enabled
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    <KeyboardAvoidingView
+      enabled
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ flex: 1 }}
       >
-        <ScrollView
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{ flex: 1 }}
-        >
-          <Container>
-            <Content>
-              <Logo />
-              <Title>Esqueci minha senha</Title>
+        <Container>
+          <Content>
+            <Logo />
 
-              <ControlledInput
-                autoCapitalize="none"
-                autoCorrect={false}
-                control={control}
-                error={errors.email && errors.email.message}
-                keyboardType="email-address"
-                name="email"
-                placeholder="Email"
-              />
+            <Title>Esqueci minha senha</Title>
 
-              <Button
-                title="Enviar Email"
-                //onPress={() => console.log('on Press')}
-                onPress={() => handleForgotPassword(control._formValues)}
-              />
-            </Content>
-          </Container>
-        </ScrollView>
-      </KeyboardAvoidingView>
+            <ControlledInput
+              name="email"
+              control={control}
+              placeholder="Email"
+              autoCorrect={false}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              error={errors.email && errors.email.message}
+            />
+
+            <Button
+              title="Enviar Email"
+              onPress={handleSubmit(handleForgotPassword)}
+            />
+          </Content>
+        </Container>
+      </ScrollView>
 
       <FullSizeButton
         onPress={() => {
-          navigate!('SignIn');
+          goBack();
         }}
         icon="arrow-left"
         title="Fazer Login"
       />
-    </>
+    </KeyboardAvoidingView>
   );
 };

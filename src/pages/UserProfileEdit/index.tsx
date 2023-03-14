@@ -8,8 +8,6 @@ import {
 import { useForm, FieldValues } from 'react-hook-form';
 import { useNavigation } from '@react-navigation/native';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-
 import { api } from '../../services/api';
 import {
   Container,
@@ -25,36 +23,21 @@ import avatarDefault from '../../assets/avatar02.png';
 import { ControlledInput } from '../../components/Form/ControlledInput';
 import { Button } from '../../components/Button';
 import { useAuth } from '../../context/hooks';
-
-interface ScreenNavigationProp {
-  goBack: () => void;
-}
-
-interface IFormInputs {
-  [name: string]: any;
-}
-
-const formSchema = yup.object({
-  old_pasword: yup.string().required('Campo obrigatório.'),
-  pasword: yup
-    .string()
-    .required('Campo obrigatório.')
-    .oneOf([yup.ref('password')], 'Confirmação incorreta.'),
-});
+import { schemaFormUpdatePassword } from '../../Schemas';
+import { GenericFormInputType, NavigateProps } from '../../global/@types';
 
 export const UserProfileEdit: React.FunctionComponent = () => {
   const { user, updateUser } = useAuth();
+  const { goBack } = useNavigation<NavigateProps>();
   const {
     handleSubmit,
     control,
     formState: { errors },
   } = useForm<FieldValues>({
-    resolver: yupResolver(formSchema),
+    resolver: yupResolver(schemaFormUpdatePassword),
   });
 
-  const { goBack } = useNavigation<ScreenNavigationProp>();
-
-  const handleProfileEdit = async (form: IFormInputs) => {
+  const handleProfileEdit = async (form: GenericFormInputType) => {
     const data = {
       name: form.name,
       email: form.email,
@@ -62,11 +45,14 @@ export const UserProfileEdit: React.FunctionComponent = () => {
 
     try {
       const response = await api.put('profile', data);
+
       updateUser(response.data);
+
       Alert.alert(
         'Perfil atualizado',
         'Os dados do seu perfil foram atualizados.',
       );
+
       goBack();
     } catch (error) {
       Alert.alert(
@@ -91,7 +77,9 @@ export const UserProfileEdit: React.FunctionComponent = () => {
             <GoBackButton onPress={goBack}>
               <Icon name="chevron-left" />
             </GoBackButton>
+
             <HeaderTitle>Seu Perfil</HeaderTitle>
+
             <UserAvatar
               source={
                 user.avatar_url ? { uri: user.avatar_url } : avatarDefault
@@ -101,20 +89,21 @@ export const UserProfileEdit: React.FunctionComponent = () => {
 
           <Content>
             <Title>Editar dados do perfil</Title>
+
             <ControlledInput
-              autoCapitalize="none"
-              autoCorrect={false}
-              control={control}
               name="name"
+              control={control}
+              autoCorrect={false}
+              autoCapitalize="none"
               placeholder="Nome completo"
               error={errors.name && errors.name.message}
             />
             <ControlledInput
-              autoCapitalize="none"
-              autoCorrect={false}
-              control={control}
               name="email"
+              control={control}
               placeholder="Email"
+              autoCorrect={false}
+              autoCapitalize="none"
               keyboardType="email-address"
               error={errors.email && errors.email.message}
             />

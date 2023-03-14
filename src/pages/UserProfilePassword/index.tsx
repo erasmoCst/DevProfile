@@ -8,8 +8,6 @@ import {
 import { useForm, FieldValues } from 'react-hook-form';
 import { useNavigation } from '@react-navigation/native';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-
 import { api } from '../../services/api';
 import {
   Container,
@@ -25,37 +23,25 @@ import avatarDefault from '../../assets/avatar02.png';
 import { ControlledInput } from '../../components/Form/ControlledInput';
 import { Button } from '../../components/Button';
 import { useAuth } from '../../context/hooks';
-
-interface ScreenNavigationProp {
-  goBack: () => void;
-}
-
-interface IFormInputs {
-  [name: string]: any;
-}
-
-const formSchema = yup.object({
-  name: yup.string().required('Informe o nome completo.'),
-  email: yup.string().email('Email inválido.').required('Informe o email.'),
-});
+import { GenericFormInputType, NavigateProps } from '../../global/@types';
+import { schemaFormUpdatePassword } from '../../Schemas';
 
 export const UserProfilePassword: React.FunctionComponent = () => {
+  const { goBack } = useNavigation<NavigateProps>();
   const { user, updateUser } = useAuth();
   const {
     handleSubmit,
     control,
     formState: { errors },
   } = useForm<FieldValues>({
-    resolver: yupResolver(formSchema),
+    resolver: yupResolver(schemaFormUpdatePassword),
     defaultValues: {
       name: user.name,
       email: user.email,
     },
   });
 
-  const { goBack } = useNavigation<ScreenNavigationProp>();
-
-  const handleUpdatePassword = async (form: IFormInputs) => {
+  const handleUpdatePassword = async (form: GenericFormInputType) => {
     const data = {
       name: user.name,
       email: user.email,
@@ -66,8 +52,11 @@ export const UserProfilePassword: React.FunctionComponent = () => {
 
     try {
       const response = await api.put('profile', data);
+
       updateUser(response.data);
+
       Alert.alert('Senha atualizada', 'Senha alterada com Sucesso.');
+
       goBack();
     } catch (error) {
       Alert.alert(
@@ -92,7 +81,9 @@ export const UserProfilePassword: React.FunctionComponent = () => {
             <GoBackButton onPress={goBack}>
               <Icon name="chevron-left" />
             </GoBackButton>
+
             <HeaderTitle>Seu Perfil</HeaderTitle>
+
             <UserAvatar
               source={
                 user.avatar_url ? { uri: user.avatar_url } : avatarDefault
@@ -102,6 +93,7 @@ export const UserProfilePassword: React.FunctionComponent = () => {
 
           <Content>
             <Title>Alterar senha</Title>
+
             <ControlledInput
               autoCapitalize="none"
               autoCorrect={false}
@@ -112,19 +104,19 @@ export const UserProfilePassword: React.FunctionComponent = () => {
               error={errors.old_password && errors.old_password.message}
             />
             <ControlledInput
-              autoCapitalize="none"
-              autoCorrect={false}
-              control={control}
-              secureTextEntry
               name="password"
+              secureTextEntry
+              control={control}
+              autoCorrect={false}
+              autoCapitalize="none"
               placeholder="Nova senha"
               error={errors.password && errors.password.message}
             />
             <ControlledInput
-              autoCapitalize="none"
-              autoCorrect={false}
-              control={control}
               secureTextEntry
+              control={control}
+              autoCorrect={false}
+              autoCapitalize="none"
               name="password_confirmation"
               placeholder="Confirmar senha"
               error={

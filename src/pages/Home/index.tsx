@@ -19,37 +19,33 @@ import {
 import AvatarDefault from '../../assets/avatar02.png';
 import { Alert, SafeAreaView } from 'react-native';
 import { useAuth } from '../../context/hooks';
-import { UserDTO } from '../../global/@types';
+import { NavigateProps, UserDTO } from '../../global/@types';
 import { api } from '../../services/api';
 import { User } from '../../components/Users';
 import { useNavigation } from '@react-navigation/native';
 
-interface ScreenNavigationProp {
-  navigate: (screeen: string, params?: unknown) => void;
-}
-
 export const Home = () => {
   const [users, setUsers] = useState<Array<UserDTO>>([]);
   const { user, signOut } = useAuth();
-  const { navigate } = useNavigation<ScreenNavigationProp>();
-
-  const handleSignOut = () => {
-    Alert.alert(
-      'Siar da aplicação',
-      'Tem certeza que deseja sair da aplicação?',
-      [
-        { text: 'Cancelar', onPress: () => {} },
-        { text: 'Confirmar', onPress: () => signOut() },
-      ],
-    );
-  };
+  const { navigate } = useNavigation<NavigateProps>();
 
   const handleUserDetails = (userId: string) => {
     navigate('UserDetails', { userId });
   };
 
-  const handleUserProfile = (userId: string) => {
+  const handleUserProfile = () => {
     navigate('UserProfile');
+  };
+
+  const handleSignOut = () => {
+    Alert.alert(
+      'Sair da aplicação',
+      'Tem certeza que deseja sair da aplicação?',
+      [
+        { text: 'Cancelar', onPress: () => {} },
+        { text: 'Sair', onPress: () => signOut() },
+      ],
+    );
   };
 
   useEffect(() => {
@@ -76,6 +72,7 @@ export const Home = () => {
 
               <UserInfoDetail>
                 <UserGreeting>Olá,</UserGreeting>
+
                 <UserName>{user.name}</UserName>
               </UserInfoDetail>
             </UserInfo>

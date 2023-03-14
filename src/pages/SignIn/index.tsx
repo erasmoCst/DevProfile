@@ -1,11 +1,10 @@
-import React, { FunctionComponent, useContext, useState } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
   Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  View,
 } from 'react-native';
 import { Button } from '../../components/Button';
 import {
@@ -20,15 +19,9 @@ import { FullSizeButton } from '../../components/FullSizeButton';
 import { useNavigation } from '@react-navigation/native';
 import { ControlledInput } from '../../components/Form/ControlledInput';
 import { FieldValues, useForm } from 'react-hook-form';
-import {
-  FormInputType,
-  GenericFormInputType,
-  NavigateProps,
-} from '../../global/@types';
-import { formSchema } from '../../components/Form/Schemas';
+import { GenericFormInputType, NavigateProps } from '../../global/@types';
 import { useAuth } from '../../context/hooks';
-import { api } from '../../services/api';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { schemaFormSignIn } from '../../Schemas';
 
 export const SignIn: FunctionComponent = () => {
   const [loading, setLoading] = useState(false);
@@ -38,7 +31,7 @@ export const SignIn: FunctionComponent = () => {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<FieldValues>({ resolver: yupResolver(formSchema) });
+  } = useForm<FieldValues>({ resolver: yupResolver(schemaFormSignIn) });
 
   const handleSignIn = async (form: GenericFormInputType) => {
     const data = {
@@ -46,12 +39,9 @@ export const SignIn: FunctionComponent = () => {
       password: form.password,
     };
 
-    console.log('data: ', data);
-
     try {
       setLoading(true);
       signIn(data);
-      navigate!('Home');
     } catch (error) {
       Alert.alert(
         'Erro na autenticação',
@@ -74,37 +64,37 @@ export const SignIn: FunctionComponent = () => {
           <Container>
             <Content>
               <Logo />
-              <View>
-                <Title>Faça seu Login</Title>
-              </View>
+
+              <Title>Faça seu Login</Title>
+
               <ControlledInput
-                autoCapitalize="none"
-                autoCorrect={false}
-                control={control}
-                error={errors.email && errors.email.message}
-                keyboardType="email-address"
                 name="email"
+                control={control}
                 placeholder="Email"
+                autoCorrect={false}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                error={errors.email && errors.email.message}
               />
               <ControlledInput
-                autoCapitalize="none"
-                autoCorrect={false}
-                control={control}
-                error={errors.password && errors.password.message}
-                name="password"
-                placeholder="Senha"
                 secureTextEntry
+                name="password"
+                control={control}
+                autoCorrect={false}
+                placeholder="Senha"
+                autoCapitalize="none"
+                error={errors.password && errors.password.message}
               />
 
               <Button
-                //disabled={loading || !!errors.email || !!errors.password}
                 title="Fazer Login"
-                onPress={() => handleSignIn(control._formValues)}
+                onPress={handleSubmit(handleSignIn)}
+                disabled={loading || !!errors.email || !!errors.password}
               />
 
               <ForgotPasswordButton
                 onPress={() => {
-                  navigate!('ForgotPassword');
+                  navigate('ForgotPassword');
                 }}
               >
                 <ForgotPasswordTitle>Esqueci minha senha</ForgotPasswordTitle>
@@ -116,7 +106,7 @@ export const SignIn: FunctionComponent = () => {
 
       <FullSizeButton
         onPress={() => {
-          navigate!('SignUp');
+          navigate('SignUp');
         }}
         icon="log-in"
         title="Criar uma Conta"

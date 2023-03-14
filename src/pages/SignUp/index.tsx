@@ -11,11 +11,11 @@ import {
 import { GenericFormInputType, NavigateProps } from '../../global/@types';
 import { Button } from '../../components/Button';
 import { ControlledInput } from '../../components/Form/ControlledInput';
-import { formSchema } from '../../components/Form/Schemas';
 import { FullSizeButton } from '../../components/FullSizeButton';
 import { Logo } from '../../components/Logo';
 import { Container, Content, Title } from './styles';
 import { api } from '../../services/api';
+import { schemaFormSignUp } from '../../Schemas';
 
 export const SignUp: FunctionComponent = () => {
   const { goBack } = useNavigation<NavigateProps>();
@@ -23,7 +23,7 @@ export const SignUp: FunctionComponent = () => {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<FieldValues>({ resolver: yupResolver(formSchema) });
+  } = useForm<FieldValues>({ resolver: yupResolver(schemaFormSignUp) });
 
   const handleSignUp = async (form: GenericFormInputType) => {
     const data = {
@@ -31,15 +31,14 @@ export const SignUp: FunctionComponent = () => {
       email: form.email,
       password: form.password,
     };
+
     try {
-      console.log(data);
       await api.post('users', data);
       Alert.alert(
         'Cadastro realizado com Sucesso!',
         'Faça seu Login para acessar o aplicativo.',
       );
     } catch (error) {
-      console.log(error);
       Alert.alert(
         'Erro no cadastro',
         `Ocorreu um erro ao fazer o cadastro. Por favor, tente novamente!\n erro: ${error}`,
@@ -48,63 +47,60 @@ export const SignUp: FunctionComponent = () => {
   };
 
   return (
-    <>
-      <KeyboardAvoidingView
-        enabled
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    <KeyboardAvoidingView
+      enabled
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ flex: 1 }}
       >
-        <ScrollView
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{ flex: 1 }}
-        >
-          <Container>
-            <Content>
-              <Logo />
-              <Title>Faça seu Cadastro</Title>
+        <Container>
+          <Content>
+            <Logo />
 
-              <ControlledInput
-                autoCapitalize="words"
-                autoCorrect={false}
-                control={control}
-                error={errors.name && errors.name.message}
-                name="name"
-                placeholder="Nome Completo"
-              />
-              <ControlledInput
-                autoCapitalize="none"
-                autoCorrect={false}
-                control={control}
-                error={errors.email && errors.email.message}
-                keyboardType="email-address"
-                name="email"
-                placeholder="Email"
-              />
-              <ControlledInput
-                autoCapitalize="none"
-                autoCorrect={false}
-                control={control}
-                error={errors.password && errors.password.message}
-                name="password"
-                placeholder="Senha"
-                secureTextEntry
-              />
-              <Button
-                title="Criar Conta"
-                onPress={handleSubmit(handleSignUp)}
-              />
-            </Content>
-          </Container>
-        </ScrollView>
-      </KeyboardAvoidingView>
+            <Title>Faça seu Cadastro</Title>
+
+            <ControlledInput
+              name="name"
+              control={control}
+              autoCorrect={false}
+              autoCapitalize="words"
+              placeholder="Nome Completo"
+              error={errors.name && errors.name.message}
+            />
+            <ControlledInput
+              name="email"
+              control={control}
+              placeholder="Email"
+              autoCorrect={false}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              error={errors.email && errors.email.message}
+            />
+            <ControlledInput
+              name="password"
+              secureTextEntry
+              control={control}
+              placeholder="Senha"
+              autoCorrect={false}
+              autoCapitalize="none"
+              error={errors.password && errors.password.message}
+            />
+
+            <Button title="Criar Conta" onPress={handleSubmit(handleSignUp)} />
+          </Content>
+        </Container>
+      </ScrollView>
 
       <FullSizeButton
         onPress={() => {
-          goBack!();
+          goBack();
         }}
         icon="arrow-left"
         title="Fazer Login"
       />
-    </>
+    </KeyboardAvoidingView>
   );
 };

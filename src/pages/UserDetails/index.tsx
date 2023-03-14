@@ -17,25 +17,17 @@ import {
   UserEmailDetail,
   UserNameDetail,
 } from './styles';
-import { UserDTO } from '../../global/@types';
+import { NavigateProps, RouteParams, UserDTO } from '../../global/@types';
 import { api } from '../../services/api';
 import { useAuth } from '../../context/hooks';
 import avatarDefault from '../../assets/avatar02.png';
 
-interface RouteParams {
-  userId: string;
-}
-
-interface ScreenNavigationProp {
-  goBack: () => void;
-}
-
 export const UserDetails: FunctionComponent = () => {
   const [userDetails, setUserDetails] = useState<UserDTO>({} as UserDTO);
   const route = useRoute();
-  const { userId } = route.params as RouteParams;
   const { user } = useAuth();
-  const { goBack } = useNavigation<ScreenNavigationProp>();
+  const { userId } = route.params as RouteParams;
+  const { goBack } = useNavigation<NavigateProps>();
 
   useEffect(() => {
     const loadUser = async () => {
@@ -52,14 +44,17 @@ export const UserDetails: FunctionComponent = () => {
         <GoBackButton onPress={goBack}>
           <Icon name="chevron-left" />
         </GoBackButton>
+
         <HeaderTile>Usuários</HeaderTile>
+
         <UserAvatar
           source={user.avatar_url ? { uri: user.avatar_url } : avatarDefault}
         />
       </Header>
+
       <Content>
         <ContentTitle>Detalhes do Usuário</ContentTitle>
-        <UserDetailAvatar />
+
         <UserDetailAvatar
           source={
             userDetails.avatar_url
@@ -68,9 +63,17 @@ export const UserDetails: FunctionComponent = () => {
           }
         />
       </Content>
+
       <Content>
         <ContentTitle>Detalhes do Usuário</ContentTitle>
-        <UserDetailAvatar />
+
+        <UserDetailAvatar
+          source={
+            userDetails.avatar_url
+              ? { uri: userDetails.avatar_url }
+              : avatarDefault
+          }
+        />
 
         <UserNameDetail>
           <NameTitle>NAME</NameTitle>

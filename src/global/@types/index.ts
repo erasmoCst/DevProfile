@@ -1,8 +1,12 @@
 declare module '*.png';
 
 export type NavigateProps = {
-  navigate?: (screen) => void;
-  goBack?: () => void;
+  goBack: () => void;
+  navigate: (screeen: string, params?: unknown) => void;
+};
+
+export type RouteParams = {
+  userId: string;
 };
 
 export type GenericFormInputType = {

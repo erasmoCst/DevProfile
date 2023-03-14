@@ -11,7 +11,7 @@ import {
 import { GenericFormInputType, NavigateProps } from '../../global/@types';
 import { Button } from '../../components/Button';
 import { ControlledInput } from '../../components/Form/ControlledInput';
-import { formSchemaResetPassword } from '../../components/Form/Schemas';
+import { schemaFormResetPassword } from '../../Schemas';
 import { FullSizeButton } from '../../components/FullSizeButton';
 import { Logo } from '../../components/Logo';
 import { Container, Content, Title } from './styles';
@@ -23,7 +23,7 @@ export const ResetPassword: FunctionComponent = () => {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<FieldValues>({ resolver: yupResolver(formSchemaResetPassword) });
+  } = useForm<FieldValues>({ resolver: yupResolver(schemaFormResetPassword) });
 
   const handleResetPassword = async (form: GenericFormInputType) => {
     const data = {
@@ -33,12 +33,10 @@ export const ResetPassword: FunctionComponent = () => {
     };
 
     try {
-      console.log(data);
       await api.post('password/resst', data);
       Alert.alert('Senha redefinida', 'A senha foi redefinida com sucesso.');
-      navigate!('SignIn');
+      navigate('SignIn');
     } catch (error) {
-      console.log(error);
       Alert.alert(
         'Erro ao redefinir senha',
         `Ocorreu um erro ao redefinir senha. Por favor, tente novamente!\n erro: ${error}`,

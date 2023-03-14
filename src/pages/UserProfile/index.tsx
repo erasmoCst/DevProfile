@@ -18,19 +18,14 @@ import {
   UserEmailDetail,
   UserNameDetail,
 } from './styles';
-
 import avatarDefault from '../../assets/avatar02.png';
 import { useAuth } from '../../context/hooks';
 import { Button } from '../../components/Button';
-
-interface ScreenNavigationProp {
-  goBack: () => void;
-  navigate: (screen: string) => void;
-}
+import { NavigateProps } from '../../global/@types';
 
 export const UserProfile: FunctionComponent = () => {
   const { user } = useAuth();
-  const { goBack, navigate } = useNavigation<ScreenNavigationProp>();
+  const { goBack, navigate } = useNavigation<NavigateProps>();
 
   return (
     <Container>
@@ -39,6 +34,7 @@ export const UserProfile: FunctionComponent = () => {
           <GoBackButton onPress={goBack}>
             <Icon name="chevron-left" />
           </GoBackButton>
+
           <HeaderTile>Seu Perfil</HeaderTile>
         </HeaderTop>
 
@@ -46,6 +42,7 @@ export const UserProfile: FunctionComponent = () => {
           <UserAvatar
             source={user.avatar_url ? { uri: user.avatar_url } : avatarDefault}
           />
+
           <PhotoButton>
             <Icon name="camera" />
           </PhotoButton>
@@ -67,6 +64,7 @@ export const UserProfile: FunctionComponent = () => {
           title="Editar dados do perfil"
           onPress={() => navigate('UserProfileEdit')}
         />
+
         <Button
           title="Trocar senha"
           onPress={() => navigate('UserProfileEdit')}

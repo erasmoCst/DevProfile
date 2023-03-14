@@ -6,15 +6,9 @@ import React, {
 } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
-import {
-  FormInputType,
-  GenericFormInputType,
-  NavigateProps,
-  UserDTO,
-} from '../global/@types';
+import { FormInputType, UserDTO } from '../global/@types';
 import { api } from '../services/api';
 import { authState, context, contextType } from './types';
-import { useNavigation } from '@react-navigation/native';
 
 export const AuthContext = createContext<context>({} as context);
 
@@ -23,27 +17,19 @@ const userData = '@DevProfile:user';
 
 export const AuthProvider: FunctionComponent<contextType> = ({ children }) => {
   const [data, setData] = useState<authState>({} as authState);
-  const { navigate } = useNavigation<NavigateProps>();
 
-  const signIn = async (form: GenericFormInputType) => {
-    console.log('form:', form);
+  const signIn = async ({ email, password }: FormInputType) => {
     try {
-      const response = await api.post('sessions', form);
-      Alert.alert(
-        'Sucesso na autenticação',
-        `Sucesso na autenticação ${response}`,
-      );
+      const response = await api.post('sessions', { email, password });
+
       const { token, user } = response.data;
+
       await AsyncStorage.setItem(tokenData, token);
       await AsyncStorage.setItem(userData, JSON.stringify(user));
 
-      api.defaults.headers.commom['Authorization'] = `Bearer ${token}`;
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-      setData({
-        token,
-        user: user,
-      });
-      navigate!('Home');
+      setData({ token, user });
     } catch (error) {
       Alert.alert(
         'Erro na autenticação',
@@ -70,7 +56,7 @@ export const AuthProvider: FunctionComponent<contextType> = ({ children }) => {
 
       if (token && user) {
         setData({ token, user: JSON.parse(user) });
-        api.defaults.headers.commom['Authorization'] = `Bearer ${token}`;
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       }
     }
     loadAuthData();
