@@ -11,38 +11,38 @@ import {
 import { GenericFormInputType, NavigateProps } from '../../global/@types';
 import { Button } from '../../components/Button';
 import { ControlledInput } from '../../components/Form/ControlledInput';
-import { formSchema } from '../../components/Form/Schemas';
+import { formSchemaForgotPassword } from '../../components/Form/Schemas';
 import { FullSizeButton } from '../../components/FullSizeButton';
 import { Logo } from '../../components/Logo';
 import { Container, Content, Title } from './styles';
 import { api } from '../../services/api';
 
-export const SignUp: FunctionComponent = () => {
-  const { goBack } = useNavigation<NavigateProps>();
+export const ForgotPassword: FunctionComponent = () => {
+  const { goBack, navigate } = useNavigation<NavigateProps>();
   const {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<FieldValues>({ resolver: yupResolver(formSchema) });
+  } = useForm<FieldValues>({ resolver: yupResolver(formSchemaForgotPassword) });
 
-  const handleSignUp = async (form: GenericFormInputType) => {
+  const handleForgotPassword = async (form: GenericFormInputType) => {
     const data = {
-      name: form.name,
       email: form.email,
-      password: form.password,
     };
+    console.log(form.email);
+
     try {
-      console.log(data);
-      await api.post('users', data);
+      console.log('handleForgotPassword');
+      await api.post('password/forgot', form.email);
       Alert.alert(
-        'Cadastro realizado com Sucesso!',
-        'Faça seu Login para acessar o aplicativo.',
+        'Email enviado',
+        'Você receberá um email com as instruções para redefinição de senha',
       );
+      navigate!('ResetPassword');
     } catch (error) {
-      console.log(error);
       Alert.alert(
         'Erro no cadastro',
-        `Ocorreu um erro ao fazer o cadastro. Por favor, tente novamente!\n erro: ${error}`,
+        `Ocorreu um erro ao enviar o email. Por favor, tente novamente!\n ${error}`,
       );
     }
   };
@@ -61,16 +61,8 @@ export const SignUp: FunctionComponent = () => {
           <Container>
             <Content>
               <Logo />
-              <Title>Faça seu Cadastro</Title>
+              <Title>Esqueci minha senha</Title>
 
-              <ControlledInput
-                autoCapitalize="words"
-                autoCorrect={false}
-                control={control}
-                error={errors.name && errors.name.message}
-                name="name"
-                placeholder="Nome Completo"
-              />
               <ControlledInput
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -80,18 +72,11 @@ export const SignUp: FunctionComponent = () => {
                 name="email"
                 placeholder="Email"
               />
-              <ControlledInput
-                autoCapitalize="none"
-                autoCorrect={false}
-                control={control}
-                error={errors.password && errors.password.message}
-                name="password"
-                placeholder="Senha"
-                secureTextEntry
-              />
+
               <Button
-                title="Criar Conta"
-                onPress={handleSubmit(handleSignUp)}
+                title="Enviar Email"
+                //onPress={() => console.log('on Press')}
+                onPress={() => handleForgotPassword(control._formValues)}
               />
             </Content>
           </Container>
@@ -100,7 +85,7 @@ export const SignUp: FunctionComponent = () => {
 
       <FullSizeButton
         onPress={() => {
-          goBack!();
+          navigate!('SignIn');
         }}
         icon="arrow-left"
         title="Fazer Login"

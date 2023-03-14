@@ -5,6 +5,7 @@ export type context = {
   user: UserDTO;
   signIn(credentials: FormInputType): void;
   signOut(): void;
+  updateUser(user: UserDTO): void;
 };
 
 export type contextType = {

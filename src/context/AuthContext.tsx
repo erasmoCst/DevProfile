@@ -6,9 +6,15 @@ import React, {
 } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
-import { FormInputType } from '../global/@types';
+import {
+  FormInputType,
+  GenericFormInputType,
+  NavigateProps,
+  UserDTO,
+} from '../global/@types';
 import { api } from '../services/api';
 import { authState, context, contextType } from './types';
+import { useNavigation } from '@react-navigation/native';
 
 export const AuthContext = createContext<context>({} as context);
 
@@ -17,15 +23,27 @@ const userData = '@DevProfile:user';
 
 export const AuthProvider: FunctionComponent<contextType> = ({ children }) => {
   const [data, setData] = useState<authState>({} as authState);
+  const { navigate } = useNavigation<NavigateProps>();
 
-  const signIn = async ({ email, password }: FormInputType) => {
+  const signIn = async (form: GenericFormInputType) => {
+    console.log('form:', form);
     try {
-      const response = await api.post('sessions', { email, password });
+      const response = await api.post('sessions', form);
+      Alert.alert(
+        'Sucesso na autenticação',
+        `Sucesso na autenticação ${response}`,
+      );
       const { token, user } = response.data;
-
       await AsyncStorage.setItem(tokenData, token);
       await AsyncStorage.setItem(userData, JSON.stringify(user));
-      setData({ token, user: JSON.parse(user) });
+
+      api.defaults.headers.commom['Authorization'] = `Bearer ${token}`;
+
+      setData({
+        token,
+        user: user,
+      });
+      navigate!('Home');
     } catch (error) {
       Alert.alert(
         'Erro na autenticação',
@@ -40,6 +58,11 @@ export const AuthProvider: FunctionComponent<contextType> = ({ children }) => {
     setData({} as authState);
   };
 
+  const updateUser = async (user: UserDTO) => {
+    await AsyncStorage.setItem(userData, JSON.stringify(user));
+    setData({ user, token: data.token });
+  };
+
   useEffect(() => {
     async function loadAuthData() {
       const token = await AsyncStorage.getItem(tokenData);
@@ -47,13 +70,16 @@ export const AuthProvider: FunctionComponent<contextType> = ({ children }) => {
 
       if (token && user) {
         setData({ token, user: JSON.parse(user) });
+        api.defaults.headers.commom['Authorization'] = `Bearer ${token}`;
       }
     }
     loadAuthData();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user: data.user, signIn, signOut }}>
+    <AuthContext.Provider
+      value={{ user: data.user, signIn, signOut, updateUser }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -11,38 +11,37 @@ import {
 import { GenericFormInputType, NavigateProps } from '../../global/@types';
 import { Button } from '../../components/Button';
 import { ControlledInput } from '../../components/Form/ControlledInput';
-import { formSchema } from '../../components/Form/Schemas';
+import { formSchemaResetPassword } from '../../components/Form/Schemas';
 import { FullSizeButton } from '../../components/FullSizeButton';
 import { Logo } from '../../components/Logo';
 import { Container, Content, Title } from './styles';
 import { api } from '../../services/api';
 
-export const SignUp: FunctionComponent = () => {
-  const { goBack } = useNavigation<NavigateProps>();
+export const ResetPassword: FunctionComponent = () => {
+  const { goBack, navigate } = useNavigation<NavigateProps>();
   const {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<FieldValues>({ resolver: yupResolver(formSchema) });
+  } = useForm<FieldValues>({ resolver: yupResolver(formSchemaResetPassword) });
 
-  const handleSignUp = async (form: GenericFormInputType) => {
+  const handleResetPassword = async (form: GenericFormInputType) => {
     const data = {
-      name: form.name,
-      email: form.email,
+      token: form.token,
       password: form.password,
+      passwordConfirmation: form.passwordConfirmation,
     };
+
     try {
       console.log(data);
-      await api.post('users', data);
-      Alert.alert(
-        'Cadastro realizado com Sucesso!',
-        'Faça seu Login para acessar o aplicativo.',
-      );
+      await api.post('password/resst', data);
+      Alert.alert('Senha redefinida', 'A senha foi redefinida com sucesso.');
+      navigate!('SignIn');
     } catch (error) {
       console.log(error);
       Alert.alert(
-        'Erro no cadastro',
-        `Ocorreu um erro ao fazer o cadastro. Por favor, tente novamente!\n erro: ${error}`,
+        'Erro ao redefinir senha',
+        `Ocorreu um erro ao redefinir senha. Por favor, tente novamente!\n erro: ${error}`,
       );
     }
   };
@@ -61,24 +60,15 @@ export const SignUp: FunctionComponent = () => {
           <Container>
             <Content>
               <Logo />
-              <Title>Faça seu Cadastro</Title>
+              <Title>Redefinir senha</Title>
 
               <ControlledInput
                 autoCapitalize="words"
                 autoCorrect={false}
                 control={control}
-                error={errors.name && errors.name.message}
-                name="name"
-                placeholder="Nome Completo"
-              />
-              <ControlledInput
-                autoCapitalize="none"
-                autoCorrect={false}
-                control={control}
-                error={errors.email && errors.email.message}
-                keyboardType="email-address"
-                name="email"
-                placeholder="Email"
+                error={errors.token && errors.token.message}
+                name="token"
+                placeholder="Código"
               />
               <ControlledInput
                 autoCapitalize="none"
@@ -89,9 +79,21 @@ export const SignUp: FunctionComponent = () => {
                 placeholder="Senha"
                 secureTextEntry
               />
+              <ControlledInput
+                autoCapitalize="none"
+                autoCorrect={false}
+                control={control}
+                error={
+                  errors.confirmationPassword &&
+                  errors.confirmationPassword.message
+                }
+                name="confirmationPassword"
+                placeholder="Senha"
+                secureTextEntry
+              />
               <Button
-                title="Criar Conta"
-                onPress={handleSubmit(handleSignUp)}
+                title="Redefinir senha"
+                onPress={handleSubmit(handleResetPassword)}
               />
             </Content>
           </Container>

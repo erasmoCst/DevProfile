@@ -1,11 +1,8 @@
 declare module '*.png';
 
 export type NavigateProps = {
-  navigate: (screen) => void;
-};
-
-export type StackNavigationGoBack = {
-  goBack: () => void;
+  navigate?: (screen) => void;
+  goBack?: () => void;
 };
 
 export type GenericFormInputType = {

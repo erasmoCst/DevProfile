@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { ThemeProvider } from 'styled-components';
 import theme from './src/global/styles/theme';
-import AppLoading from 'expo-app-loading';
 import { NavigationContainer } from '@react-navigation/native';
 import { Routes } from './src/routes';
 import { AuthProvider } from './src/context/AuthContext';
@@ -12,6 +11,9 @@ import {
   Roboto_400Regular,
   Roboto_700Bold,
 } from '@expo-google-fonts/roboto';
+import * as SplashScreen from 'expo-splash-screen';
+
+SplashScreen.preventAutoHideAsync();
 
 const App: React.FunctionComponent = () => {
   const [fontsLoaded] = useFonts({
@@ -19,20 +21,33 @@ const App: React.FunctionComponent = () => {
     Roboto_700Bold,
   });
 
+  useEffect(() => {
+    async function prepare() {
+      await SplashScreen.preventAutoHideAsync();
+    }
+    prepare();
+  }, []);
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
   if (!fontsLoaded) {
-    return <AppLoading />;
+    return null;
   }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <NavigationContainer>
-        <StatusBar backgroundColor="trasparent" translucent />
-        <ThemeProvider theme={theme}>
+      <StatusBar translucent backgroundColor="trasparent" />
+      <ThemeProvider theme={theme}>
+        <NavigationContainer onReady={onLayoutRootView}>
           <AuthProvider>
             <Routes />
           </AuthProvider>
-        </ThemeProvider>
-      </NavigationContainer>
+        </NavigationContainer>
+      </ThemeProvider>
     </GestureHandlerRootView>
   );
 };

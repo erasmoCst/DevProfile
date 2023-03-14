@@ -1,5 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { FunctionComponent } from 'react';
+import { ForgotPassword } from '../pages/ForgotPassword';
+import { ResetPassword } from '../pages/ResetPassword';
 import { SignIn } from '../pages/SignIn';
 import { SignUp } from '../pages/SignUp';
 
@@ -13,6 +15,8 @@ export const AuthRoutes: FunctionComponent = () => {
     >
       <Auth.Screen name="SignIn" component={SignIn} />
       <Auth.Screen name="SignUp" component={SignUp} />
+      <Auth.Screen name="ForgotPassword" component={ForgotPassword} />
+      <Auth.Screen name="ResetPassword" component={ResetPassword} />
     </Auth.Navigator>
   );
 };

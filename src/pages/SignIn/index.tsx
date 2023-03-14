@@ -20,36 +20,42 @@ import { FullSizeButton } from '../../components/FullSizeButton';
 import { useNavigation } from '@react-navigation/native';
 import { ControlledInput } from '../../components/Form/ControlledInput';
 import { FieldValues, useForm } from 'react-hook-form';
-import { GenericFormInputType, NavigateProps } from '../../global/@types';
+import {
+  FormInputType,
+  GenericFormInputType,
+  NavigateProps,
+} from '../../global/@types';
 import { formSchema } from '../../components/Form/Schemas';
 import { useAuth } from '../../context/hooks';
+import { api } from '../../services/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const SignIn: FunctionComponent = () => {
-  const { signIn } = useAuth();
   const [loading, setLoading] = useState(false);
+  const { signIn } = useAuth();
   const { navigate } = useNavigation<NavigateProps>();
-
   const {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<FieldValues>({
-    resolver: yupResolver(formSchema),
-  });
+  } = useForm<FieldValues>({ resolver: yupResolver(formSchema) });
 
-  const handleSignIn = (form: GenericFormInputType) => {
+  const handleSignIn = async (form: GenericFormInputType) => {
     const data = {
       email: form.email,
       password: form.password,
     };
+
+    console.log('data: ', data);
+
     try {
       setLoading(true);
-      console.log('data', data);
       signIn(data);
+      navigate!('Home');
     } catch (error) {
       Alert.alert(
         'Erro na autenticação',
-        'Ocorreu um erro ao fazer login. \n Verifique as credenciais.',
+        'Ocorreu um erro ao fazer login, verifique as credenciais.',
       );
     }
   };
@@ -91,12 +97,16 @@ export const SignIn: FunctionComponent = () => {
               />
 
               <Button
-                disabled={loading || !!errors.email || !!errors.password}
-                onPress={handleSubmit(handleSignIn)}
+                //disabled={loading || !!errors.email || !!errors.password}
                 title="Fazer Login"
+                onPress={() => handleSignIn(control._formValues)}
               />
 
-              <ForgotPasswordButton>
+              <ForgotPasswordButton
+                onPress={() => {
+                  navigate!('ForgotPassword');
+                }}
+              >
                 <ForgotPasswordTitle>Esqueci minha senha</ForgotPasswordTitle>
               </ForgotPasswordButton>
             </Content>
@@ -106,7 +116,7 @@ export const SignIn: FunctionComponent = () => {
 
       <FullSizeButton
         onPress={() => {
-          navigate('SignUp');
+          navigate!('SignUp');
         }}
         icon="log-in"
         title="Criar uma Conta"
